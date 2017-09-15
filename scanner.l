@@ -2,7 +2,7 @@
     #include "tokens.h"
     #include "hash.h"
 
-    int lineNumber = 0;
+    int lineNumber = 1;
     int running = 1;
 
     int getLineNumber(void)
@@ -19,8 +19,20 @@
 
 DIGIT       [0-9]
 LETTER      [a-zA-Z]
+ID          [a-zA-Z_]([a-zA-Z_0-9]|([ ][a-zA-Z_0-9]))*  
+
+%x COMMENT
 
 %%
+
+    /***** Comments *****/
+    
+(\/\/).*                    /* Single Line Comnent */
+
+"/*"                        { BEGIN(COMMENT);       }
+<COMMENT>"*/"               { BEGIN(INITIAL);       }
+<COMMENT>\n                 { lineNumber++;         }
+<COMMENT>.                  /* Ignore all          */
 
     /***** Language Reserved Words *****/
 
@@ -29,7 +41,7 @@ short                       { return KW_SHORT;      }
 long                        { return KW_LONG;       }
 float                       { return KW_FLOAT;      }
 double                      { return KW_DOUBLE;     }
-when                        { return KW_WHEN;       }
+if                          { return KW_WHEN;       }
 then                        { return KW_THEN;       }
 else                        { return KW_ELSE;       }
 while                       { return KW_WHILE;      }
@@ -38,12 +50,7 @@ read                        { return KW_READ;       }
 print                       { return KW_PRINT;      }
 return                      { return KW_RETURN;     }
 
-    /***** Misc Characters *****/
-
-\n                          { lineNumber++;         }
-(\/\/).*                    /* Comment             */
-
-    /***** Special Characters - TODO check ']' *****/
+    /***** Special Characters *****/
 [-,;:()[\]{}+*/<>=!&$#]     { return yytext[0];     }
 
     /***** Composed Operators *****/
@@ -56,20 +63,40 @@ return                      { return KW_RETURN;     }
 "&&"                        { return OPERATOR_AND;  }
 "||"                        { return OPERATOR_OR;   }
 
-    /***** Identifiers  - TODO *****/
+    /***** Identifiers *****/
 
-    /***** Literals - TODO save literal value *****/
+{ID}                        { 
+                                hashInsert(yytext);
+                                return TK_IDENTIFIER;
+                            }
 
-    /* Numbers */
+    /***** Literals *****/
 
-{DIGIT}+                    { return LIT_INTEGER;   }
-{DIGIT}+\.{DIGIT}+          { return LIT_REAL;      }
+        /* Numbers */
 
-    /* Text - TODO check matching */
+{DIGIT}+                    { 
+                                hashInsert(yytext);
+                                return LIT_INTEGER;
+                            }
+{DIGIT}+\.{DIGIT}+          { 
+                                hashInsert(yytext);
+                                return LIT_REAL;
+                            }
 
-'.'                         { return LIT_CHAR;      }
-\"(\\.|[^\n\r(\\")])*\"     { return LIT_STRING;    }
+        /* Text */
 
+'.'                         { 
+                                hashInsert(yytext);
+                                return LIT_CHAR;
+                            }
+\"(\\.|[^\n\r\\"])*\"       {
+                                hashInsert(yytext);
+                                return LIT_STRING;
+                            }
+
+    /***** Misc *****/
+
+\n                          { lineNumber++;         }
 " "                         /* Ignore Spaces       */
 <<EOF>>                     { running = 0; return 0;}
 .                           { return TOKEN_ERROR;   }

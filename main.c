@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "tokens.h"
+#include "hash.h"
 
 extern char* yytext;
 extern FILE* yyin;
@@ -32,7 +33,9 @@ int main(int argv, char* argc[])
         case KW_LONG:       printf("KW_LONG\n"); break;
         case KW_FLOAT:      printf("KW_FLOAT\n"); break;
         case KW_DOUBLE:     printf("KW_DOUBLE\n"); break;
+        case KW_WHEN:       printf("KW_WHEN\n"); break;
         case KW_THEN:       printf("KW_THEN\n"); break;
+        case KW_ELSE:       printf("KW_ELSE\n"); break;        
         case KW_WHILE:      printf("KW_WHILE\n"); break;
         case KW_FOR:        printf("KW_FOR\n"); break;
         case KW_READ:       printf("KW_READ\n"); break;
@@ -43,6 +46,7 @@ int main(int argv, char* argc[])
         case OPERATOR_EQ:   printf("OPERATOR_EQ\n"); break;
         case OPERATOR_NE:   printf("OPERATOR_NE\n"); break;
         case OPERATOR_AND:  printf("OPERATOR_AND\n"); break;
+        case OPERATOR_OR:   printf("OPERATOR_OR\n"); break;        
         case TK_IDENTIFIER: printf("TK_IDENTIFIER, value %s\n", yytext); break;
         case LIT_INTEGER:   printf("LIT_INTEGER, value %s\n", yytext); break;
         case LIT_REAL:      printf("LIT_REAL, value %s\n", yytext); break;
@@ -50,7 +54,10 @@ int main(int argv, char* argc[])
         case LIT_STRING:    printf("LIT_STRING, value %s\n", yytext); break;
         case TOKEN_ERROR:   printf("TOKEN_ERROR, value %s\n", yytext); break;
         case 0:             printf("End of File\n"); break;
-        default:            printf("Special Character, value%s\n", yytext);break;
+        default:            printf("Special Character, value %s\n", yytext);break;
         }
     }
+
+    printf("\nPrinting Symbol Table:\n");
+    hashPrint();
 }
