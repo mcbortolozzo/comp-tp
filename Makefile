@@ -1,20 +1,21 @@
 
 
 
+CC = gcc
+
+EXEC = etapa1
+SOURCES = $(filter-out lex.yy.c, $(wildcard *.c))
+OBJECTS = $(SOURCES:.c=.o) lex.yy.o
 
 
-
-etapa1: lex.yy.o hash.o
-	gcc lex.yy.o hash.o -o etapa1
-
-lex.yy.o: lex.yy.c
-	gcc lex.yy.c -c
+EXEC: $(OBJECTS)
+	$(CC) $(OBJECTS) -o $(EXEC)
 
 lex.yy.c: scanner.l
 	lex scanner.l
 
-hash.o: hash.c
-	gcc hash.c -c
+%.o: %.c
+	$(CC) -c $< -o $@
 
 clean:
-	rm -f lex.yy.c etapa1 *.o
+	rm -f lex.yy.c $(EXEC) $(OBJECTS)

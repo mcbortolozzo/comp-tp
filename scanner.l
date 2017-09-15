@@ -80,9 +80,3 @@ int yywrap(void)
 {
     return 1;
 }
-
-
-#include "main.c"
-
-
-

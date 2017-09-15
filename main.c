@@ -1,8 +1,12 @@
 
 #include <stdio.h>
+#include <stdlib.h>
+
+#include "tokens.h"
 
 extern char* yytext;
 extern FILE* yyin;
+int yylex(void);
 int getLineNumber(void);
 int isRunning(void);
 
