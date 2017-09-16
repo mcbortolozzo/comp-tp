@@ -10,10 +10,12 @@ extern FILE* yyin;
 int yylex(void);
 int getLineNumber(void);
 int isRunning(void);
+void initMe(void);
 
 int main(int argv, char* argc[])
 {
-    if(argv < 2)
+	initMe();    
+	if(argv < 2)
     {
         printf("./etapa1 in_file\n");
         exit(1);
@@ -33,7 +35,7 @@ int main(int argv, char* argc[])
         case KW_LONG:       printf("KW_LONG\n"); break;
         case KW_FLOAT:      printf("KW_FLOAT\n"); break;
         case KW_DOUBLE:     printf("KW_DOUBLE\n"); break;
-        case KW_WHEN:       printf("KW_WHEN\n"); break;
+        case KW_IF:       printf("KW_IF\n"); break;
         case KW_THEN:       printf("KW_THEN\n"); break;
         case KW_ELSE:       printf("KW_ELSE\n"); break;        
         case KW_WHILE:      printf("KW_WHILE\n"); break;

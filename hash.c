@@ -34,7 +34,7 @@ hash_node_t* hashInsert(char *text)
     strcpy(node->text, text);
 
     int hash = hashString(text);
-    
+
     hash_node_t *curr = HashTable[hash];
     if(curr == NULL)
     {
@@ -63,6 +63,7 @@ hash_node_t *hashFind(char *text)
     {
         if(strcmp(curr->text, text) == 0)
             return curr;
+	curr = curr->next;
     }
     return 0;
 }

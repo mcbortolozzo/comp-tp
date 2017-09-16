@@ -15,6 +15,11 @@
         return running;
     }
 
+    void initMe(void)
+    {
+
+    }
+
 %}
 
 DIGIT       [0-9]
@@ -41,7 +46,7 @@ short                       { return KW_SHORT;      }
 long                        { return KW_LONG;       }
 float                       { return KW_FLOAT;      }
 double                      { return KW_DOUBLE;     }
-if                          { return KW_WHEN;       }
+if                          { return KW_IF;	    }
 then                        { return KW_THEN;       }
 else                        { return KW_ELSE;       }
 while                       { return KW_WHILE;      }

@@ -1,0 +1,118 @@
+// Reserved Keywords
+
+byte
+short
+long
+float
+double
+if
+then
+else
+while
+for
+read
+print
+return
+
+// Special Chars
+
+,;:()[]{}+-*/
+<
+>
+=
+!&$#
+
+// Composed Operators
+
+<=
+>=
+==
+!= 
+&&
+||
+
+// Identifiers
+
+nospaces
+_underscorestart
+alphanumeric123
+CamelCase
+abc123
+single space
+multiple spa ces
+spaces and 1 numbers
+m0r3 5p4535 4nd numb3r5
+Spaces and UpperCaSe
+separated by ; semicolon
+
+// Literals
+
+'c''h''a''r'
+"string"
+"string with spaces"
+"string \n with newline"
+"\"quoted string\""
+"random stuff aushf091h3unrp9172y4081y3b5puh89Y) *&T($!@*^T$!@*&YIOJ@MK<A:S>C??:>{Q >?>>>L<|}{][+_+)*-"
+
+123456789
+11 20 34	// a collision on the hash table occurs here (but should work)
+1.2
+10.0
+5.5 4.2 41;31;10
+
+// Line Numbers
+
+this is line 65
+this is line 66; and this is also line 66
+
+and this one is 68 ;)
+
+// Comments
+
+	/* Single line*/
+
+	/* Multiple
+
+		L 
+	ine
+	s
+
+		*/
+
+	/* qwertyuiopasdfghjkl;zxcvbnm,./['\]QWERTYUIOP{}ASDFGHJKL:"|ZXCVBNM<>?1234567890-=!@#$%^&*()_+
+
+	49
+	894561-+96		7934htp3io4tm'lgm\[dfbmkdnfb9uhbrnpgin
+	sdonpfuvbndfbk
+	wer
+	2342
+	3dfpm||<\n\:"''
+	*/
+
+
+
+// Code sample
+
+int main()
+{
+    byte: c;
+    byte: isLowercaseVowel, isUppercaseVowel;
+
+    printf("Enter an alphabet: ");
+    scanf("%c",&c);
+
+    // evaluates to 1 (true) if c is a lowercase vowel
+    isLowercaseVowel = (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u');
+
+    // evaluates to 1 (true) if c is an uppercase vowel
+    isUppercaseVowel = (c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U');
+
+    // evaluates to 1 (true) if either isLowercaseVowel or isUppercaseVowel is true
+    if (isLowercaseVowel || isUppercaseVowel)
+        printf("%c is a vowel.", c);
+    else
+        printf("%c is a consonant.", c);
+    return 0;
+}
+
+
