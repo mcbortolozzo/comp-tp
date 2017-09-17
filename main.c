@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -7,6 +6,7 @@
 
 extern char* yytext;
 extern FILE* yyin;
+extern hash_map_t* symbolTable;
 int yylex(void);
 int getLineNumber(void);
 int isRunning(void);
@@ -35,7 +35,7 @@ int main(int argv, char* argc[])
         case KW_LONG:       printf("KW_LONG\n"); break;
         case KW_FLOAT:      printf("KW_FLOAT\n"); break;
         case KW_DOUBLE:     printf("KW_DOUBLE\n"); break;
-        case KW_IF:       printf("KW_IF\n"); break;
+        case KW_IF:       	printf("KW_IF\n"); break;
         case KW_THEN:       printf("KW_THEN\n"); break;
         case KW_ELSE:       printf("KW_ELSE\n"); break;        
         case KW_WHILE:      printf("KW_WHILE\n"); break;
@@ -61,5 +61,5 @@ int main(int argv, char* argc[])
     }
 
     printf("\nPrinting Symbol Table:\n");
-    hashPrint();
+    hashPrint(symbolTable);
 }
