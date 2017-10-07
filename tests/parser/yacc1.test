@@ -1,0 +1,14 @@
+a: short = 0;
+i: long = 0;
+v: byte[10] 0 2 20 3;
+mat: double[10];
+v: float = 10.2;
+
+
+(long) main()
+{
+} 
+
+(short) inc(x: long){
+  a = "abc";	
+}

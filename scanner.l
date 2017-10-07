@@ -1,38 +1,33 @@
 %{
-    #include "tokens.h"
+    #include "y.tab.h"
     #include "hash.h"
 
+    hash_map_t *symbolTable;
+
     int lineNumber = 1;
-    int running = 1;
-	hash_map_t *symbolTable;
 
     int getLineNumber(void)
     {
         return lineNumber;
     }
 
-    int isRunning(void)
-    {
-        return running;
-    }
-
     void initMe(void)
     {
-		symbolTable = newHashMap(TABLE_SIZE);
+      symbolTable = newHashMap(TABLE_SIZE);
     }
 
 %}
 
 DIGIT       [0-9]
 LETTER      [a-zA-Z]
-ID          [a-zA-Z_]([a-zA-Z_0-9]|([ ][a-zA-Z_0-9]))*  
+ID          [a-zA-Z_]([a-zA-Z_0-9]|([ ][a-zA-Z_0-9]))*
 
 %x COMMENT
 
 %%
 
     /***** Comments *****/
-    
+
 (\/\/).*                    /* Single Line Comnent */
 
 "/*"                        { BEGIN(COMMENT);       }
@@ -71,7 +66,7 @@ return                      { return KW_RETURN;     }
 
     /***** Identifiers *****/
 
-{ID}                        { 
+{ID}                        {
                                 hashInsert(symbolTable, TK_IDENTIFIER, yytext);
                                 return TK_IDENTIFIER;
                             }
@@ -80,18 +75,18 @@ return                      { return KW_RETURN;     }
 
         /* Numbers */
 
-{DIGIT}+                    { 
+{DIGIT}+                    {
                                 hashInsert(symbolTable, LIT_INTEGER, yytext);
                                 return LIT_INTEGER;
                             }
-{DIGIT}+\.{DIGIT}+          { 
+{DIGIT}+\.{DIGIT}+          {
                                 hashInsert(symbolTable, LIT_REAL, yytext);
                                 return LIT_REAL;
                             }
 
         /* Text */
 
-'.'                         { 
+'.'                         {
                                 hashInsert(symbolTable, LIT_CHAR, yytext);
                                 return LIT_CHAR;
                             }
@@ -108,9 +103,3 @@ return                      { return KW_RETURN;     }
 .                           { return TOKEN_ERROR;   }
 
 %%
-
-int yywrap(void)
-{
-	running = 0;
-    return 1;
-}
