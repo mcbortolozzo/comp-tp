@@ -1,6 +1,6 @@
 %{
-    #include "y.tab.h"
     #include "hash.h"
+    #include "y.tab.h"
 
     hash_map_t *symbolTable;
 
@@ -67,8 +67,9 @@ return                      { return KW_RETURN;     }
     /***** Identifiers *****/
 
 {ID}                        {
+                              yylval.symbol =
                                 hashInsert(symbolTable, TK_IDENTIFIER, yytext);
-                                return TK_IDENTIFIER;
+                              return TK_IDENTIFIER;
                             }
 
     /***** Literals *****/
@@ -76,23 +77,27 @@ return                      { return KW_RETURN;     }
         /* Numbers */
 
 {DIGIT}+                    {
+                              yylval.symbol =
                                 hashInsert(symbolTable, LIT_INTEGER, yytext);
-                                return LIT_INTEGER;
+                              return LIT_INTEGER;
                             }
 {DIGIT}+\.{DIGIT}+          {
+                              yylval.symbol =
                                 hashInsert(symbolTable, LIT_REAL, yytext);
-                                return LIT_REAL;
+                              return LIT_REAL;
                             }
 
         /* Text */
 
 '.'                         {
+                              yylval.symbol =
                                 hashInsert(symbolTable, LIT_CHAR, yytext);
-                                return LIT_CHAR;
+                              return LIT_CHAR;
                             }
 \"(\\.|[^\n\r\\"])*\"       {
+                              yylval.symbol =
                                 hashInsert(symbolTable, LIT_STRING, yytext);
-                                return LIT_STRING;
+                              return LIT_STRING;
                             }
 
     /***** Misc *****/

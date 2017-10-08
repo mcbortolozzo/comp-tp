@@ -1,5 +1,7 @@
 %{
   #include <stdio.h>
+  #include <stdlib.h>
+  #include "hash.h"
 
   int running = 1;
   int getLineNumber();
@@ -8,6 +10,7 @@
   void yyerror(const char *str)
   {
     fprintf(stderr, "error on line %d: %s\n", getLineNumber(), str);
+    exit(3);
   }
 
   int isRunning(void)
@@ -17,13 +20,19 @@
 
 %}
 
+%error-verbose
+
+%union{
+  hash_node_t *symbol;
+}
+
 %token KW_BYTE KW_SHORT KW_LONG KW_FLOAT KW_DOUBLE
 %token KW_IF KW_THEN KW_ELSE KW_WHILE KW_FOR
 %token KW_READ KW_RETURN KW_PRINT
 %token OPERATOR_LE OPERATOR_GE OPERATOR_EQ OPERATOR_NE
 %token OPERATOR_AND OPERATOR_OR
-%token TK_IDENTIFIER
-%token LIT_INTEGER LIT_REAL LIT_CHAR LIT_STRING
+%token<symbol> TK_IDENTIFIER
+%token<symbol> LIT_INTEGER LIT_REAL LIT_CHAR LIT_STRING
 %token TOKEN_ERROR
 
 %left OPERATOR_OR
@@ -31,7 +40,7 @@
 %left OPERATOR_EQ OPERATOR_NE
 %left OPERATOR_GE OPERATOR_LE '<' '>'
 %left '+' '-'
-%left '*' '/' 
+%left '*' '/'
 
 %start program
 
@@ -100,7 +109,6 @@ cmd_block
 cmd_list
   : cmd
   | cmd ';' cmd_list
-  | ';'
   ;
 
 cmd
@@ -147,9 +155,8 @@ flow_control_cmd
   ;
 
 expr
-  : TK_IDENTIFIER
-  | TK_IDENTIFIER '[' expr ']'
-  | lit_var
+  : expr_var
+  | TK_IDENTIFIER '(' call_arg_list ')'
   | expr '+' expr
   | expr '-' expr
   | expr '*' expr
@@ -162,8 +169,19 @@ expr
   | expr OPERATOR_NE expr
   | expr OPERATOR_AND expr
   | expr OPERATOR_OR expr
+  | '(' expr ')'
   ;
 
+call_arg_list
+  : expr_var
+  | call_arg_list ',' expr_var
+  ;
+
+expr_var
+  : TK_IDENTIFIER
+  | TK_IDENTIFIER '[' expr ']'
+  | lit_var
+  ;
 
 %%
 

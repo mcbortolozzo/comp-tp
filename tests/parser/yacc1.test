@@ -7,7 +7,7 @@ v: float = 10.2;
 
 (long) main()
 {
-} 
+}
 
 (short) inc(x: long){
   a = "abc";	

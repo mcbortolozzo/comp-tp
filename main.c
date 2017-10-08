@@ -27,4 +27,6 @@ int main(int argv, char* argc[])
 
     //printf("\nPrinting Symbol Table:\n");
     //hashPrint(symbolTable);
+
+		exit(0);
 }
