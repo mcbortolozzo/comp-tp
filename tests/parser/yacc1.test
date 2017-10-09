@@ -1,14 +1,76 @@
-a: short = 0;
-i: long = 0;
-v: byte[10] 0 2 20 3;
-mat: double[10];
-v: float = 10.2;
+var1:
+byte = 1;
+var with spaces: short = 'a';
+var_without_spaces: long = 3.2;
+var_with_123_nbs: float = 4;
+var with 123 nbs and spaces: double = 5;
 
+vector1: byte[10];
+initialized_vector: short[2] 'c' 2.0 2;
 
-(long) main()
+(short) func1()
 {
 }
 
-(short) inc(x: long){
-  a = "abc";	
+(float) func with space(arg1: long)
+{
+}
+
+(short) main()
+{
+  attribution test = var 1 + var2 * var3;
+  attribution vector[2] = var 2 / var3 + 2;
+  vector expr[abc + 23 - var var * s  || (10 - 2)] = vector expr[2];
+  var = var;
+
+  logic op = (abc > 20 || abc < 20 || abc == 20 || abc != 20 || abc >= 20
+              || abc <= 20) && 0;
+
+  func call = func1(20, abc, 2 - 2) + func1(abc) || main( abc 123);
+
+  read > read var;
+  read > var read;
+  read > var;
+
+  print "needs to start with string or fails",
+        int, "print string", var 2, 10, abc, abc + 2;
+  print "bla", 10 + 2, abc 123, 20 - 2, a_3 42 abc, 20 * abc && ( 2 - 4);
+
+  return (var 1);
+  return (abc_123);
+  return (a + 20 >= (dois - 2 * sete));
+  return (abc[10 - 4 * 10.2]);
+
+  ;;;;;;;
+  ;;;
+  ;;;;;;
+  ;;
+  ;
+
+  if (abc) then {abc = 1};
+  if (abc) then {abc = 0} else {abc = 0};
+  if
+  (a a a a a a a a a a  == 2 - s) then
+  {} else {};
+
+  if (if if) then
+  {
+    if if else if = if else if if;
+    if (if else if if) then
+    {
+      if else if = if if;
+    } else {
+      if if else if = if if else if
+    }
+  } else
+  {
+    if if = else if
+  };
+
+  while( abada d sdf sdf != duh 3 as09i k)
+  {
+    print "print print\"print\" print print"
+  };
+
+  return (0)
 }

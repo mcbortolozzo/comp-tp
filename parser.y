@@ -155,7 +155,9 @@ flow_control_cmd
   ;
 
 expr
-  : expr_var
+  : TK_IDENTIFIER
+  | TK_IDENTIFIER '[' expr ']'
+  | lit_var
   | TK_IDENTIFIER '(' call_arg_list ')'
   | expr '+' expr
   | expr '-' expr
@@ -173,14 +175,8 @@ expr
   ;
 
 call_arg_list
-  : expr_var
-  | call_arg_list ',' expr_var
-  ;
-
-expr_var
-  : TK_IDENTIFIER
-  | TK_IDENTIFIER '[' expr ']'
-  | lit_var
+  : expr
+  | call_arg_list ',' expr
   ;
 
 %%
