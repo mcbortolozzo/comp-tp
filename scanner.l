@@ -68,7 +68,8 @@ return                      { return KW_RETURN;     }
 
 {ID}                        {
                               yylval.symbol =
-                                hashInsert(symbolTable, TK_IDENTIFIER, yytext);
+                                hashInsert(symbolTable, SYMBOL_IDENTIFIER,
+                                  yytext);
                               return TK_IDENTIFIER;
                             }
 
@@ -78,12 +79,13 @@ return                      { return KW_RETURN;     }
 
 {DIGIT}+                    {
                               yylval.symbol =
-                                hashInsert(symbolTable, LIT_INTEGER, yytext);
+                                hashInsert(symbolTable, SYMBOL_LIT_INT, yytext);
                               return LIT_INTEGER;
                             }
 {DIGIT}+\.{DIGIT}+          {
                               yylval.symbol =
-                                hashInsert(symbolTable, LIT_REAL, yytext);
+                                hashInsert(symbolTable, SYMBOL_LIT_REAL,
+                                  yytext);
                               return LIT_REAL;
                             }
 
@@ -91,12 +93,14 @@ return                      { return KW_RETURN;     }
 
 '.'                         {
                               yylval.symbol =
-                                hashInsert(symbolTable, LIT_CHAR, yytext);
+                                hashInsert(symbolTable, SYMBOL_LIT_CHAR,
+                                  yytext);
                               return LIT_CHAR;
                             }
 \"(\\.|[^\n\r\\"])*\"       {
                               yylval.symbol =
-                                hashInsert(symbolTable, LIT_STRING, yytext);
+                                hashInsert(symbolTable, SYMBOL_LIT_STRING,
+                                  yytext);
                               return LIT_STRING;
                             }
 

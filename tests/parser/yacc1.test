@@ -21,10 +21,10 @@ initialized_vector: short[2] 'c' 2.0 2;
   attribution test = var 1 + var2 * var3;
   attribution vector[2] = var 2 / var3 + 2;
   vector expr[abc + 23 - var var * s  || (10 - 2)] = vector expr[2];
-  var = var;
+  var = ! var;
 
   logic op = (abc > 20 || abc < 20 || abc == 20 || abc != 20 || abc >= 20
-              || abc <= 20) && 0;
+              || abc <= 20) && 0 && !1;
 
   func call = func1(20, abc, 2 - 2) + func1(abc) || main( abc 123);
 
@@ -39,7 +39,7 @@ initialized_vector: short[2] 'c' 2.0 2;
   return (var 1);
   return (abc_123);
   return (a + 20 >= (dois - 2 * sete));
-  return (abc[10 - 4 * 10.2]);
+  return (abc[10 - !4 * 10.2]);
 
   ;;;;;;;
   ;;;
@@ -47,8 +47,8 @@ initialized_vector: short[2] 'c' 2.0 2;
   ;;
   ;
 
-  if (abc) then {abc = 1};
-  if (abc) then {abc = 0} else {abc = 0};
+  if (abc) then {abc = !1};
+  if (!abc) then {abc = 0} else {abc = 0};
   if
   (a a a a a a a a a a  == 2 - s) then
   {} else {};

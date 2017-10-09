@@ -41,6 +41,7 @@
 %left OPERATOR_GE OPERATOR_LE '<' '>'
 %left '+' '-'
 %left '*' '/'
+%right '!'
 
 %start program
 
@@ -159,6 +160,7 @@ expr
   | TK_IDENTIFIER '[' expr ']'
   | lit_var
   | TK_IDENTIFIER '(' call_arg_list ')'
+  | '!' expr
   | expr '+' expr
   | expr '-' expr
   | expr '*' expr

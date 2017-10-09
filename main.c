@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "tokens.h"
 #include "hash.h"
 
 extern char* yytext;
