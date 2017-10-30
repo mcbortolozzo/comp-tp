@@ -1,6 +1,5 @@
 %{
     #include "hash.h"
-    #include "ast.h"
     #include "y.tab.h"
 
     hash_map_t *symbolTable;
