@@ -4,10 +4,12 @@
 
 #define MAX_CHILDREN        4
 
+#define AST_CMD_BLOCK       4
 #define AST_LIST_DECL       5
 #define AST_VAR_DECL        6
 #define AST_VAR_INIT        7
-#define AST_LIST_VECT_INIT  8
+#define AST_VECT_INIT       8
+#define AST_LIST_VECT_INIT  9
 #define AST_FUNC            10
 #define AST_FUNC_HEADER     11
 #define AST_LIST_PARAM_DECL 12
@@ -51,14 +53,8 @@ typedef struct ast_node {
   struct ast_node* children[MAX_CHILDREN];
 } ast_node_t;
 
-typedef struct ast_tree {
-    ast_node_t* root;
-} ast_tree_t;
-
 ast_node_t* ast_create(int type, hash_node_t* symbol, ast_node_t *child1,
   ast_node_t *child2, ast_node_t *child3, ast_node_t *child4);
-
-void ast_print(ast_tree_t* tree);
 
 void ast_print_node(ast_node_t* node, int depth);
 

@@ -75,7 +75,7 @@
 %%
 
 program
-  : ext_list { ast_print_node($1, 0);}
+  : ext_list { ast_decompile($1);}
   ;
 
 ext_list
@@ -100,7 +100,7 @@ type
 
 ext_var_init
   : '=' lit_var { $$ = ast_create(AST_VAR_INIT, 0, $2, 0, 0, 0); }
-  | '[' LIT_INTEGER ']' vector_init_list { $$ = ast_create(AST_VAR_INIT, $2, $4, 0, 0, 0); }
+  | '[' LIT_INTEGER ']' vector_init_list { $$ = ast_create(AST_VECT_INIT, $2, $4, 0, 0, 0); }
   ;
 
 vector_init_list
@@ -133,7 +133,7 @@ param_decl
   ;
 
 cmd_block
-  : '{' cmd_list '}' { $$ = $2; }
+  : '{' cmd_list '}' { $$ = ast_create(AST_CMD_BLOCK, 0, $2, 0, 0, 0); }
 
 cmd_list
   : cmd { $$ = ast_create(AST_CMD_LIST, 0, $1, 0, 0, 0); }
@@ -152,7 +152,7 @@ cmd
 
 attr_cmd
   : TK_IDENTIFIER '=' expr  { $$ = ast_create(AST_ATTR, $1, $3, 0, 0, 0); }
-  | TK_IDENTIFIER '[' expr ']' '=' expr { $$ = ast_create(AST_ATTR, $1, $3, $6, 0, 0); }
+  | TK_IDENTIFIER '[' expr ']' '=' expr { $$ = ast_create(AST_ATTR, $1, $6, $3, 0, 0); }
   ;
 
 read_cmd
