@@ -104,7 +104,7 @@ ext_var_init
   ;
 
 vector_init_list
-  : lit_var vector_init_list { $$ = ast_create(AST_LIST_VECT_INIT, 0, $1, $2, 0, 0); }
+  : vector_init_list lit_var { $$ = ast_create(AST_LIST_VECT_INIT, 0, $2, $1, 0, 0); }
   | { $$ = 0; }
   ;
 
@@ -186,7 +186,7 @@ flow_control_cmd
 expr
   : TK_IDENTIFIER { $$ = ast_create(AST_ID, $1, 0, 0, 0, 0); }
   | TK_IDENTIFIER '[' expr ']' { $$ = ast_create(AST_VECT, $1, $3, 0, 0, 0); }
-  | lit_var
+  | lit_var {$$ = ast_create(AST_LIT, 0, $1, 0, 0, 0); }
   | TK_IDENTIFIER '(' call_arg_list ')' { $$ = ast_create(AST_CALL, $1, $3, 0, 0, 0); }
   | '!' expr { $$ = ast_create(AST_NOT, 0, $2, 0, 0, 0); }
   | expr '+' expr { $$ = ast_create(AST_ADD, 0, $1, $3, 0, 0); }

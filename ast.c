@@ -61,7 +61,6 @@ void decompile_list_append(ast_node_t* node, int ident_level, char* separator)
 
   if(node->children[1])
   {
-    print_ident(ident_level);
     printf("%s", separator);
     decompile(node->children[1], ident_level);
   }
@@ -83,13 +82,13 @@ void decompile_expr(ast_node_t* node, int ident_level)
                                 decompile(node->children[0], ident_level);
                                 printf("]");
                                 break;
-    case AST_LIT:               break;
+    case AST_LIT:               decompile(node->children[0], ident_level); break;
     case AST_CALL:              printf("%s(", node->symbol->text);
                                 decompile(node->children[0], ident_level);
                                 printf(")");
                                 break;
     case AST_NOT:               printf("!");
-                                decompile(node->children[1], ident_level);
+                                decompile(node->children[0], ident_level);
                                 break;
     case AST_ADD:               decompile_bin_expr(node, ident_level, "+"); break;
     case AST_SUB:               decompile_bin_expr(node, ident_level, "-"); break;
@@ -110,6 +109,7 @@ void decompile_expr(ast_node_t* node, int ident_level)
 void print_ident(int ident_level)
 {
   int i;
+  printf("\n");
   for(i = 0; i < ident_level; i++)
     printf("  ");
 }
@@ -124,25 +124,28 @@ void decompile(ast_node_t* node, int ident_level)
   switch (node->type) {
     //external declarations
     case AST_PARAM_DECL:        //FALLTHROUGH
-    case AST_VAR_DECL:          printf("%s: ", node->symbol->text);
+    case AST_VAR_DECL:          if(node->type == AST_VAR_DECL)
+                                  print_ident(ident_level);
+                                printf("%s: ", node->symbol->text);
                                 decompile(node->children[0], ident_level);
                                 decompile(node->children[1], ident_level);
                                 if(node->type == AST_VAR_DECL)
-                                  printf(";\n");
+                                  printf(";");
                                 return; //manual decompile
     case AST_VAR_INIT:          printf(" = "); break;
     case AST_VECT_INIT:         printf("[%s] ", node->symbol->text); break;
     case AST_LIST_DECL:         break;
-    case AST_LIST_VECT_INIT:    break;
+    case AST_LIST_VECT_INIT:    decompile_list_preppend(node, ident_level, " ");
+                                return;
 
     //functions
-    case AST_FUNC:              break;
+    case AST_FUNC:              print_ident(ident_level); printf("\n"); break;
     case AST_FUNC_HEADER:       printf("(");
                                 decompile(node->children[0], ident_level);
                                 printf(") %s (", node->symbol->text);
                                 if(node->children[1])
                                   decompile(node->children[1], ident_level);
-                                printf(")\n");
+                                printf(")");
                                 return; //manual decompile
     case AST_LIST_PARAM_DECL:   decompile_list_preppend(node, ident_level, ", ");
                                 return; //manual decompile
@@ -155,14 +158,13 @@ void decompile(ast_node_t* node, int ident_level)
 
     //comands
     case AST_CMD_BLOCK:         print_ident(ident_level);
-                                printf("{\n");
+                                printf("{");
                                 decompile(node->children[0], ident_level + 1);
-                                printf("\n");
                                 print_ident(ident_level);
-                                printf("}\n");
+                                printf("}");
                                 return; //manual decompile
-    case AST_CMD_LIST:          print_ident(ident_level);
-                                decompile_list_append(node, ident_level, ";\n");
+    case AST_CMD_LIST:
+                                decompile_list_append(node, ident_level, ";");
                                 return; //manual decompile
     case AST_ATTR:              print_ident(ident_level);
                                 printf("%s", node->symbol->text);
@@ -183,23 +185,24 @@ void decompile(ast_node_t* node, int ident_level)
                                 break;
     case AST_LIST_PRINT:        decompile_list_preppend(node, ident_level, ", ");
                                 return; //manual decompile
-    case AST_RET:               printf("return "); break;
+    case AST_RET:               print_ident(ident_level); printf("return "); break;
 
     //flow control
-    case AST_IF:                printf("if (");
+    case AST_IF:                print_ident(ident_level);
+                                printf("if (");
                                 decompile(node->children[0], ident_level);
-                                printf(") then\n");
+                                printf(") then");
                                 decompile(node->children[1], ident_level);
                                 if(node->children[2])
                                 {
-                                  printf("else\n");
+                                  printf("else");
                                   decompile(node->children[2], ident_level);
                                 }
                                 return;
     case AST_WHILE:             print_ident(ident_level);
                                 printf("while(");
                                 decompile(node->children[0], ident_level);
-                                printf(")\n");
+                                printf(")");
                                 decompile(node->children[1], ident_level);
                                 return;
     case AST_LIST_ARG:          decompile_list_preppend(node, ident_level, ", ");
