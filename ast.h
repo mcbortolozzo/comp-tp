@@ -2,6 +2,9 @@
 
 #include "hash.h"
 
+#ifndef AST_H
+#define AST_H
+
 #define MAX_CHILDREN        4
 
 #define AST_CMD_BLOCK       4
@@ -51,6 +54,7 @@ typedef struct ast_node {
   int type;
   hash_node_t* symbol;
   struct ast_node* children[MAX_CHILDREN];
+  int line;
 } ast_node_t;
 
 ast_node_t* ast_create(int type, hash_node_t* symbol, ast_node_t *child1,
@@ -59,3 +63,5 @@ ast_node_t* ast_create(int type, hash_node_t* symbol, ast_node_t *child1,
 void ast_print_node(ast_node_t* node, int depth);
 
 void ast_decompile(ast_node_t* node);
+
+#endif

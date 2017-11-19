@@ -15,6 +15,7 @@ ast_node_t* ast_create(int type, hash_node_t* symbol, ast_node_t *child1,
   node->children[1] = child2;
   node->children[2] = child3;
   node->children[3] = child4;
+  node->line = getLineNumber();
   return node;
 }
 

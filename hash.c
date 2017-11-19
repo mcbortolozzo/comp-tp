@@ -34,7 +34,8 @@ hash_node_t* hashInsert(hash_map_t *map, int type, char *text)
 
     node = calloc(1, sizeof(hash_node_t));
     node->text = calloc(strlen(text) + 1, sizeof(char));
-	node->type = type;
+	  node->type = type;
+    node->nature = 0;
     strcpy(node->text, text);
 
     int hash = hashString(text);
@@ -43,7 +44,7 @@ hash_node_t* hashInsert(hash_map_t *map, int type, char *text)
     if(curr == NULL)
     {
         map->nodes[hash] = node;
-    } 
+    }
     else
     {
         hash_node_t* prev;
@@ -52,7 +53,7 @@ hash_node_t* hashInsert(hash_map_t *map, int type, char *text)
             prev = curr;
             curr = curr->next;
         }
-        prev->next = node;        
+        prev->next = node;
     }
 
     return node;
@@ -61,7 +62,7 @@ hash_node_t* hashInsert(hash_map_t *map, int type, char *text)
 hash_node_t *hashFind(hash_map_t *map, char *text)
 {
     int hash = hashString(text);
-    
+
     hash_node_t *curr = map->nodes[hash];
     while(curr != NULL)
     {
@@ -80,9 +81,9 @@ void hashPrint(hash_map_t *map)
         if(map->nodes[i] != NULL)
         {
             printf("Row:%d\n", i);
-            printRow(map->nodes[i]);   
+            printRow(map->nodes[i]);
         }
-    }         
+    }
 }
 
 void printRow(hash_node_t *start)
@@ -94,4 +95,3 @@ void printRow(hash_node_t *start)
         curr = curr->next;
     }
 }
-

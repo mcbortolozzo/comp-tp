@@ -18,6 +18,8 @@ typedef struct hashNode
 {
     struct hashNode* next;
     int type;
+    int nature;
+    int dataType;
     char* text;
 } hash_node_t;
 

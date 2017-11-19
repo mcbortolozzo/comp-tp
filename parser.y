@@ -3,6 +3,7 @@
   #include <stdlib.h>
   #include "hash.h"
   #include "ast.h"
+  #include "semantic_check.h"
 
   int running = 1;
   int getLineNumber();
@@ -75,7 +76,7 @@
 %%
 
 program
-  : ext_list { ast_decompile($1);}
+  : ext_list { check_tree($1);}
   ;
 
 ext_list
