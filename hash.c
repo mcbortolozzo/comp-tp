@@ -1,4 +1,6 @@
 #include "hash.h"
+#include "semantic_check.h"
+
 
 int hashString(char *text);
 void printRow(hash_node_t *start);
@@ -35,7 +37,8 @@ hash_node_t* hashInsert(hash_map_t *map, int type, char *text)
     node = calloc(1, sizeof(hash_node_t));
     node->text = calloc(strlen(text) + 1, sizeof(char));
 	  node->type = type;
-    node->nature = 0;
+    node->nature = ID_UNDEFINED;
+    node->dataType = TYPE_UNDEFINED;
     strcpy(node->text, text);
 
     int hash = hashString(text);
