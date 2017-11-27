@@ -1,25 +1,35 @@
 // UFRGS - Compiladores - Marcelo Johann - 2017/2
 
-a: short = 0;
-i: long = 0;
-v: long[10] 0 0 0 0 0 0 0 0 0 0;
+a: byte = 0;
+c: short = 5;
+e: long = 0;
+g: double = 1.0;
+h: double = 1.1;
+i: float = 2.4;
+j: float = 2.5;
+k: long[10] 0.2 0 0 0 0 0 0 0 0 0;
+l: float[5] 1 2 3 4 5;
+
+
+
 mat: long[10];
-f: float = 10.5;
-c: byte = 'x';
-d: byte = 65;
+w: float = 10.55;
+z: byte = 'x';
+s: byte = 65;
 
 
 (long) main()
   {
   a = 10;
-  v[2] = v[10-1];
+  mat[2] = mat[10];
+  g = 2.2;
 
   print " Digite um numero: \n";
   read > i;
   while (i<10)
     {
     a = incn(a,1);
-    i = i + 1
+    i = i + 1.0
     };
   print "Incrementado algumas vezes fica ",a,"\n";
   if (a==5) then
@@ -34,6 +44,6 @@ d: byte = 65;
   }
 
 (long) incn (x: long, n: long)
-  {return (f+n)}
+  {return (a+e)}
 
 (short) voidfunc() {}

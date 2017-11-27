@@ -1,0 +1,9 @@
+
+a: short = 0;
+b: byte = 'y';
+c: long = 65;
+
+(long) main()
+{
+	a = c + 3;
+}

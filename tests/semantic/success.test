@@ -1,0 +1,37 @@
+a: byte = 0;
+b: short = 100;
+c: long = 'a';
+d: float = 2.2;
+e: double = 1.1;
+
+v1: byte[10] 0 0 0 0 0 0 0 0 0 0;
+v2: short[10] 1 2 3 4 5 6 7 8 9 10;
+v3: long[2] 5 10;
+v4: float[1] 10.5;
+v5: double[3] 10.1 15.6 5.9;
+
+(long) main()
+{
+  a = sum(b,c) - a;
+  if(v1[2] == v2[a]) then
+  {
+    print "abc123", d;
+  }
+  else
+  {
+    print "abc123", div(e,d);
+  }
+}
+
+(long) sum(val1: short, val2: short)
+{
+  return (val1 + val2);
+}
+
+(float) div(val1: float, val2: float)
+{
+  if(val2 == 0) then
+    print "Error, dividing by 0"
+  else
+    return (val1/val2);
+}

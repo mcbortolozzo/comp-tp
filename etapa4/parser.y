@@ -76,7 +76,7 @@
 %%
 
 program
-  : ext_list { check_tree($1); tac_print(tac_gen($1));}
+  : ext_list { check_tree($1);}
   ;
 
 ext_list

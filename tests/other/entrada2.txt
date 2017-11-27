@@ -1,0 +1,100 @@
+// UFRGS - Bateria de testes [ lang172 ]
+// Athos & Fernando - Compiladores 2017/2
+
+// [1/5] Declarações
+
+sh: short = 10;
+var1: long = 500;
+var2: double = 8001;
+vect1: long[10] 0 1 2 3 4 5 6 7 8 9;
+vect2: short[30];
+vect3: float[50];
+vect4: byte[8] 0 0 1 0 1 0 1 0;
+vect5: double[1024];
+vect6: float[5] 0.0 1.1 2.2 3.3 4.4;
+vect7: byte[12] 'C' 'O' 'M' 'P' 'I' 'L' 'A' 'D' 'O' 'R' 'E' 'S';
+vect8: byte[8] 'e' 1 3 3 7 'h' 'K' 'r';
+pi: float = 3.141592;
+char1: byte = 'x';
+char2: byte = 65;
+char3: byte = 'A';
+index: short = 1;
+variavel 1: byte = 'a';
+variavel 2: byte = 'b';
+i: short = 0;
+
+// [2/5] Def. Funções
+
+(short) voidfunc () {{}}
+
+(long) incn (x: long, n: long)
+  {return (x+n)}
+
+(byte) tauto (asrt: byte) 
+  {return 't';}
+
+// [3/5] Blocos e comandos simples
+
+(long) simple ()
+  {
+  sh = 10;
+  vect1[2] = vect1[8-1];
+
+  read > char3;
+  while (index < 15)
+    {
+    sh = incn(sh,1);
+    index = index + 1
+    };
+  print "System runs on single channel";
+  if (sh<11) then
+    { print "Ops!\n"; };
+  if (sh==11) then
+    ;
+  if (sh>11) then {print "goal achieved!";} else {
+    print "goal failed...";
+  }
+  ;;;
+  {;};
+  {};
+  {;;
+  ;;};
+   return (var1);
+  }
+
+  // [4/5] Expressões Aritméticas e Lógicas
+
+(short) aritLogic () {
+  vect1[1] = 1 + 2;
+  print "vect1: ", vect1[1];
+  vect[5 - 3] = 3 - 5;
+  {
+    var1 = variavel 1;
+    variavel 1 = variavel 2;
+    variavel 2 = var1
+  };
+  char1 = char2 < char3;
+  char2 = char3 > char1;
+  var1 = sh * pi;
+  vect3[1] = vect6[2] / pi;
+  char3 = !tauto(char3);
+  print "char: ",char1,"\n";
+  vect3[3*10] = char3;
+  vect3[3*10+1] = 'Y';
+  return (sh);
+}
+
+
+  // [5/5] Comandos de Controle de Fluxo
+
+(short) fluxCtrl () {
+  while(variavel 1 < variavel 2) 
+  {
+    if (variavel 1 < variavel 2) then {
+      var1 = incn(variavel 1,5);;;
+      i = incn(i,1);;
+    } else {print "hello, friend!";};
+  };
+  if (!tauto(char1)) then {;;};
+  return (sh)
+}

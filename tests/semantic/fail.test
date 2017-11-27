@@ -1,0 +1,67 @@
+
+// Invalid variable initialization x4
+a: byte = 2.3;
+e: double = 1;
+
+v2: short[10] 1 2 3.5 4 5 6 7 8 9 10;
+v4: float[1] 1;
+
+// redeclared var x1
+a: short = 1;
+
+(long) main()
+{
+  a = a[2];     //Wrong usage (scalar as vector)
+  if(v1 == v2) then //Wrong usage (vector as scalar)
+  {
+    print "abc123", main   //Wrong usage for function
+  }
+  else
+  {
+    print "abc123", div(a,e) //Wrong parameter type
+  };
+
+  div = 20;       //Wrong function usage
+  a = sum(a,e);   //Wrong parameter type
+  v2[2.2] = 2;    //Wrong vector type
+  a = v2[1.40];   //Wrong vector type
+
+  a = a > e;      //Wrong data type on expression
+  a = a + (a > e); //Wrong data type on expression
+  a = (a>e) || (a>e); // Incompatible attribution
+
+  if(a) then ;       //Wrong data type on expression
+  if(a + ((a>e) ||(a>e))) then ;     //Wrong data type on expression
+
+  a = sum(a);     // Missing arguments
+  a = sum(a,a,a);  // Too many arguments
+
+  b = a + 2;    //Undeclared Variable
+  a = b + 2;      //Undeclared Variable
+}
+
+
+(long) sum(val1: short, val2: short)
+{
+  return (val1 + val2);
+}
+
+(float) div(val1: float, val2: float)
+{
+  if(val2 == 0) then
+    print "Error, dividing by 0"
+  else
+    return (val1/val2);
+}
+
+(short) sum(){} //Redeclared function
+
+(short) blabla()
+{
+  return (2.2); //wrong return type
+}
+
+(float) bla()
+{
+  return (2);  //wrong return type
+}
