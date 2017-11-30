@@ -12,6 +12,11 @@ v5: double[3] 10.1 15.6 5.9;
 
 (long) main()
 {
+  if(a == 2) then
+  {
+    return (0);
+  };
+
   a = sum(b,c) - a;
   if(v1[2] == v2[a]) then
   {
@@ -19,7 +24,7 @@ v5: double[3] 10.1 15.6 5.9;
   }
   else
   {
-    print "abc123", div(e,d);
+    print "abc123", div(e + 2,d);
   }
 }
 

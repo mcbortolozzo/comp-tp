@@ -165,7 +165,7 @@ void check_cmd(ast_node_t *cmd_node, func_decl_t *local_scope)
       expr_type = check_expr(cmd_node->children[0], local_scope);
       if(cmd_node->symbol->nature == ID_UNDEFINED)
         semantic_error("Undeclared variable %s",
-                      cmd_node->line, cmd_node->symbol->text);      
+                      cmd_node->line, cmd_node->symbol->text);
       if(cmd_node->children[1]) //this means it's vector attr
       {
         if(cmd_node->symbol->nature != ID_VECTOR)
@@ -351,7 +351,6 @@ int check_decl_init(ast_node_t *decl_node)
   else
   {
     ast_node_t *vect_init = decl_node->children[1]->children[0];
-
     while(vect_init)
     {
       if(get_symbol_type(vect_init->children[0]->symbol) != decl_type)

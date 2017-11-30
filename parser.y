@@ -3,6 +3,7 @@
   #include <stdlib.h>
   #include "hash.h"
   #include "ast.h"
+  #include "tac.h"
   #include "semantic_check.h"
 
   int running = 1;

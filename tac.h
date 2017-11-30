@@ -1,5 +1,9 @@
+#ifndef TAC_H
+#define TAC_H
+
 #include "ast.h"
 #include "hash.h"
+#include "semantic_check.h"
 
 #define TAC_UNDEFINED   1
 
@@ -20,6 +24,7 @@
 #define TAC_NE          139
 #define TAC_AND         140
 #define TAC_OR          141
+#define TAC_NOT         142
 
 #define TAC_LABEL       145
 #define TAC_BEGINFUN    146
@@ -32,8 +37,12 @@
 #define TAC_PRINT       153
 #define TAC_READ        154
 
-#define TAC_PUSHARG     160
 #define TAC_POPARG      161
+
+#define TAC_VARDECL     170
+#define TAC_VECTDECL     171
+#define TAC_INITVAR     172
+#define TAC_INITVECT    173
 
 typedef struct tac_node
 {
@@ -52,3 +61,5 @@ tac_node_t* tac_new(int type, hash_node_t *res, hash_node_t *op1,
 tac_node_t* tac_join(tac_node_t *tac1, tac_node_t *tac2);
 
 void tac_print(tac_node_t *tac_node);
+
+#endif

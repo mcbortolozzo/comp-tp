@@ -9,6 +9,7 @@ hash_node_t* make_label();
 tac_node_t *tac_attr(ast_node_t *ast_node);
 tac_node_t *tac_expr(ast_node_t *ast_node);
 int get_expr_tac(int ast_type);
+tac_node_t* tac_not(ast_node_t *ast_node);
 
 tac_node_t *tac_param_decl(ast_node_t *ast_node);
 tac_node_t *tac_cmd_list(ast_node_t *ast_node);
@@ -18,6 +19,10 @@ tac_node_t *tac_call(ast_node_t *ast_node);
 tac_node_t *tac_arg_list(ast_node_t *ast_node);
 
 tac_node_t *tac_ret(ast_node_t *ast_node);
+tac_node_t *tac_if(ast_node_t *ast_node);
+
+tac_node_t *tac_var_decl(ast_node_t *ast_node);
+tac_node_t *tac_vect_init(ast_node_t *init, tac_node_t* symbol, int pos);
 
 void tac_print_node(tac_node_t *tac_node);
 
@@ -47,6 +52,12 @@ tac_node_t *tac_expr(ast_node_t *ast_node)
   int type = get_expr_tac(ast_node->type);
   tac_node_t *new_tac = tac_new(type, res,  op1 ? op1->res : 0,
                                             op2 ? op2->res : 0);
+  if(op1->type == TAC_SYMBOL)
+    op1 = 0;
+
+  if(op2->type == TAC_SYMBOL)
+    op2 = 0;
+
   return tac_join(tac_join(op1, op2), new_tac);
 }
 
@@ -75,7 +86,10 @@ tac_node_t *tac_vec(ast_node_t* ast_node)
   hash_node_t *vec_temp = make_temp();
   tac_node_t *vec_node
     = tac_new(TAC_FROMVECMOV, vec_temp, index->res, ast_node->symbol);
-  return tac_join(index, vec_node);
+  if(index->type != TAC_SYMBOL)
+    return tac_join(index, vec_node);
+  else
+    return vec_node;
 }
 
 tac_node_t *tac_param_decl(ast_node_t *ast_node)
@@ -102,7 +116,10 @@ tac_node_t *tac_ret(ast_node_t *ast_node)
 {
   tac_node_t *tac_expr = tac_gen(ast_node->children[0]);
   tac_node_t *new_tac = tac_new(TAC_RET, 0, tac_expr ? tac_expr->res : 0, 0);
-  return tac_join(tac_expr, new_tac);
+  if(tac_expr->type != TAC_SYMBOL)
+    return tac_join(tac_expr, new_tac);
+  else
+    return new_tac;
 }
 
 tac_node_t *tac_print_list(ast_node_t *ast_node)
@@ -113,29 +130,33 @@ tac_node_t *tac_print_list(ast_node_t *ast_node)
 
   tac_node_t *print_arg = tac_gen(ast_node->children[0]);
   tac_node_t *new_tac = tac_new(TAC_PRINT, 0, print_arg ? print_arg->res:0, 0);
-  new_tac = tac_join(print_arg, new_tac);
-  return tac_join(new_tac, print_list);
+  if(print_arg->type != TAC_SYMBOL)
+    new_tac = tac_join(print_arg, new_tac);
+  return tac_join(print_list, new_tac);
 }
 
 tac_node_t *tac_func(ast_node_t *ast_node)
 {
-  tac_node_t *tac_label
+  /*tac_node_t *tac_label
     = tac_new(TAC_LABEL, 0, ast_node->children[0]->symbol, 0);
   tac_node_t *func
     = tac_join(tac_gen(ast_node->children[0]),tac_gen(ast_node->children[1]));
   func = tac_join(tac_label, func);
   tac_node_t *ret = tac_new(TAC_RET, 0, 0, 0);
-  return tac_join(func, ret);
+  return tac_join(func, ret);*/
+  tac_node_t *begin
+    = tac_new(TAC_BEGINFUN, ast_node->children[0]->symbol, 0, 0);
+  tac_node_t *command = tac_gen(ast_node->children[1]);
+  tac_node_t *end = tac_new(TAC_ENDFUN, ast_node->children[0]->symbol, 0, 0);
+  return tac_join(tac_join(begin, command), end);
 }
 
 tac_node_t *tac_call(ast_node_t *ast_node)
 {
   tac_node_t *call_args = tac_gen(ast_node->children[0]);
-  tac_node_t *call = tac_new(TAC_CALL, 0, ast_node->symbol, 0);
-  call = tac_join(call_args, call);
   hash_node_t *res = make_temp();
-  tac_node_t *tac_res = tac_new(TAC_POPARG, res, 0, 0);
-  return tac_join(call, tac_res);
+  tac_node_t *call = tac_new(TAC_CALL, res, ast_node->symbol, 0);
+  return tac_join(call_args, call);
 }
 
 tac_node_t *tac_arg_list(ast_node_t *ast_node)
@@ -145,12 +166,107 @@ tac_node_t *tac_arg_list(ast_node_t *ast_node)
     arg_list = tac_gen(ast_node->children[1]);
 
   tac_node_t *arg_expr = tac_gen(ast_node->children[0]);
-  tac_node_t *arg = tac_new(TAC_PUSHARG, 0, arg_expr ? arg_expr->res : 0, 0);
-  arg = tac_join(arg_expr, arg);
+  tac_node_t *arg = tac_new(TAC_ARG, 0, arg_expr ? arg_expr->res : 0, 0);
+  if(arg_expr->type != TAC_SYMBOL)
+    arg = tac_join(arg_expr, arg);
 
   return tac_join(arg_list, arg);
 }
 
+tac_node_t* tac_not(ast_node_t *ast_node)
+{
+  tac_node_t *expr = tac_gen(ast_node->children[0]);
+  hash_node_t *res = make_temp();
+  tac_node_t *not = tac_new(TAC_NOT, res, expr->res, 0);
+  if(expr->type != TAC_SYMBOL)
+    return tac_join(expr, not);
+  else
+    return not;
+}
+
+tac_node_t *tac_if(ast_node_t *ast_node)
+{
+    tac_node_t *cond = tac_gen(ast_node->children[0]);
+    hash_node_t *endif_label = make_label();
+    tac_node_t *jz = tac_new(TAC_IFZ, 0, cond ? cond->res : 0, endif_label);
+    jz = tac_join(cond, jz);
+
+    tac_node_t *if_cmd = tac_gen(ast_node->children[1]);
+    if_cmd = tac_join(jz, if_cmd);
+
+    hash_node_t *last_label = 0;
+    if(ast_node->children[2])
+    {
+      last_label = make_label();
+      tac_node_t *jmp = tac_new(TAC_JUMP, 0, last_label, 0);
+      if_cmd = tac_join(if_cmd, jmp);
+    }
+
+    tac_node_t *else_label = tac_new(TAC_LABEL, 0, endif_label, 0);
+    else_label = tac_join(if_cmd, else_label);
+    if(ast_node->children[2])
+    {
+      tac_node_t *else_cmd = tac_gen(ast_node->children[2]);
+      else_cmd = tac_join(else_label, else_cmd);
+      tac_node_t *endelse_label = tac_new(TAC_LABEL, 0, last_label, 0);
+      return tac_join(else_cmd, endelse_label);
+    }
+    else
+      return else_label;
+}
+
+tac_node_t *tac_while(ast_node_t *ast_node)
+{
+  hash_node_t *start_label = make_label();
+  hash_node_t *end_label = make_label();
+  tac_node_t *label = tac_new(TAC_LABEL, 0, start_label, 0);
+  tac_node_t *cond = tac_gen(ast_node->children[0]);
+  cond = tac_join(label, cond);
+  tac_node_t *jz = tac_new(TAC_IFZ, 0, cond ? cond->res : 0, end_label);
+  jz = tac_join(cond, jz);
+  tac_node_t *cmd = tac_gen(ast_node->children[1]);
+  cmd = tac_join(jz, cmd);
+  tac_node_t *jmp = tac_new(TAC_JUMP, 0, start_label, 0);
+  jmp = tac_join(cmd, jmp);
+  tac_node_t *end = tac_new(TAC_LABEL, 0, end_label, 0);
+  return tac_join(jmp, end);
+}
+
+tac_node_t *tac_var_decl(ast_node_t *ast_node)
+{
+  tac_node_t *symbol = tac_new(TAC_SYMBOL, ast_node->symbol, 0, 0);
+  tac_node_t *decl = 0;
+
+  ast_node_t *init = ast_node->children[1];
+  tac_node_t *tac_init = 0;
+  switch (init->type) {
+    case AST_VAR_INIT:
+      decl = tac_new(TAC_VARDECL, symbol->res, 0, 0);
+      tac_init = tac_join(decl, tac_new(TAC_INITVAR, symbol->res,
+                                            init->children[0]->symbol, 0));
+      break;
+    case AST_VECT_INIT:
+      decl = tac_new(TAC_VECTDECL, symbol->res, 0, 0);
+      if(init->children[0])
+        tac_init = tac_vect_init(init->children[0], symbol, 0);
+      tac_init = tac_join(decl, tac_init);
+      break;
+  }
+  return tac_init;
+}
+
+tac_node_t *tac_vect_init(ast_node_t *init, tac_node_t* symbol, int pos)
+{
+  if(!init) return 0;
+  char buffer[10];
+  sprintf(buffer, "%d", pos);
+  hash_node_t *index = hashInsert(symbolTable, SYMBOL_LIT_INT, buffer);
+  index->dataType = TYPE_INT;
+  index->nature = ID_SCALAR;
+  tac_node_t *val_init = tac_new(TAC_INITVECT,
+                                symbol->res, index, init->children[0]->symbol);
+  return tac_join(tac_vect_init(init->children[1], symbol, pos + 1), val_init);
+}
 
 tac_node_t* tac_gen(ast_node_t *ast_node)
 {
@@ -174,6 +290,8 @@ tac_node_t* tac_gen(ast_node_t *ast_node)
     case AST_AND:
     case AST_OR:
       return tac_expr(ast_node);
+    case AST_NOT:
+      return tac_not(ast_node);
     case AST_FUNC:
       return tac_func(ast_node);
     case AST_FUNC_HEADER:
@@ -206,6 +324,13 @@ tac_node_t* tac_gen(ast_node_t *ast_node)
       return tac_call(ast_node);
     case AST_LIST_ARG:
       return tac_arg_list(ast_node);
+    case AST_IF:
+      return tac_if(ast_node);
+    case AST_WHILE:
+      return tac_while(ast_node);
+    case AST_VAR_DECL:
+      return tac_var_decl(ast_node);
+    default: printf("Missing case AST_%d\n", ast_node->type); break;
   }
 
   return 0;
@@ -275,8 +400,11 @@ void tac_print_node(tac_node_t *tac_node)
     case TAC_RET:       printf("TAC_RET"); break;
     case TAC_PRINT:     printf("TAC_PRINT"); break;
     case TAC_READ:      printf("TAC_READ"); break;
-    case TAC_PUSHARG:   printf("TAC_PUSHARG"); break;
     case TAC_POPARG:    printf("TAC_POPARG"); break;
+    case TAC_VARDECL:   printf("TAC_VARDECL"); break;
+    case TAC_INITVAR:   printf("TAC_INITVAR"); break;
+    case TAC_INITVECT:  printf("TAC_INITVECT"); break;
+    case TAC_VECTDECL:  printf("TAC_VECTDECL"); break;
     default:            printf("TAC_%d", tac_node->type);
   }
   printf("(");
@@ -301,4 +429,11 @@ hash_node_t* make_temp()
     char buffer[60];
     sprintf(buffer, "_temp%d", Temp_Count++);
     return hashInsert(symbolTable, SYMBOL_IDENTIFIER, buffer);
+}
+
+hash_node_t* make_label()
+{
+  char buffer[60];
+  sprintf(buffer, "_label%d", Temp_Count++);
+  return hashInsert(symbolTable, SYMBOL_IDENTIFIER, buffer);
 }
