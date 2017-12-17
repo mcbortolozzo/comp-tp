@@ -123,15 +123,12 @@ int get_semantic_type(ast_node_t *type_node)
 
 int get_symbol_type(hash_node_t *symbol)
 {
-  int type = 0;
   switch (symbol->type) {
     case SYMBOL_LIT_CHAR:
-    case SYMBOL_LIT_INT:  type = TYPE_INT; break;
-    case SYMBOL_LIT_REAL: type = TYPE_FLOAT; break;
-    default:              type = TYPE_UNDEFINED; break;
+    case SYMBOL_LIT_INT:  return TYPE_INT;
+    case SYMBOL_LIT_REAL: return TYPE_FLOAT;
+    default:              return TYPE_UNDEFINED;
   }
-  symbol->dataType = type;
-  return type;
 }
 
 void check_var(ast_node_t *root)
@@ -276,8 +273,7 @@ int check_expr(ast_node_t *expr_node, func_decl_t *local_scope)
       return local_symbol->dataType;
 
     case AST_LIT:
-      expr_node->children[0]->symbol->dataType = get_symbol_type(expr_node->children[0]->symbol);
-      return expr_node->children[0]->symbol->dataType;
+      return get_symbol_type(expr_node->children[0]->symbol);
 
     case AST_CALL:
       if(local_symbol->nature == ID_UNDEFINED)

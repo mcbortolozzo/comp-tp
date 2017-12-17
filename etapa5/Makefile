@@ -4,7 +4,7 @@
 CC = gcc
 CC_FLAGS = -g
 
-EXEC = etapa6
+EXEC = etapa5
 SOURCES = $(filter-out y.tab.c lex.yy.c, $(wildcard *.c))
 OBJECTS = $(SOURCES:.c=.o) lex.yy.o y.tab.o
 

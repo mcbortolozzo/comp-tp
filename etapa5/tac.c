@@ -428,12 +428,12 @@ hash_node_t* make_temp()
 {
     char buffer[60];
     sprintf(buffer, "_temp%d", Temp_Count++);
-    return hashInsert(symbolTable, SYMBOL_TEMP, buffer);
+    return hashInsert(symbolTable, SYMBOL_IDENTIFIER, buffer);
 }
 
 hash_node_t* make_label()
 {
   char buffer[60];
   sprintf(buffer, "_label%d", Temp_Count++);
-  return hashInsert(symbolTable, SYMBOL_LABEL, buffer);
+  return hashInsert(symbolTable, SYMBOL_IDENTIFIER, buffer);
 }

@@ -1,9 +1,10 @@
 
-a: short = 0;
+a: float = 1.0;
 b: byte = 'y';
 c: long = 65;
 
 (long) main()
 {
-	a = c + 3;
+	a =  3.3 - 2.2;
+	print (a), "\n", 'c', "\n";
 }
