@@ -1,5 +1,7 @@
 #include "tac.h"
 
+//// FALTANDO: AND, OR, NOT, BEGIN/ENDFUN, RET, CALL
+
 int Label_Count = 0;
 int Temp_Count = 0;
 
@@ -50,6 +52,18 @@ tac_node_t *tac_expr(ast_node_t *ast_node)
   tac_node_t *op2 = tac_gen(ast_node->children[1]);
   hash_node_t *res = make_temp();
   int type = get_expr_tac(ast_node->type);
+
+  if(ast_node->type == AST_ADD || ast_node->type == AST_SUB
+      || ast_node->type == AST_MUL || ast_node->type == AST_DIV)
+  {
+    if(op1->res->dataType == TYPE_FLOAT || op2->res->dataType == TYPE_FLOAT)
+      res->dataType = TYPE_FLOAT;
+    else
+      res->dataType = TYPE_INT;
+  }
+  else
+    res->dataType = TYPE_BOOL;
+
   tac_node_t *new_tac = tac_new(type, res,  op1 ? op1->res : 0,
                                             op2 ? op2->res : 0);
   if(op1->type == TAC_SYMBOL)
@@ -84,6 +98,8 @@ tac_node_t *tac_vec(ast_node_t* ast_node)
 {
   tac_node_t *index = tac_gen(ast_node->children[0]);
   hash_node_t *vec_temp = make_temp();
+  vec_temp->dataType = ast_node->symbol->dataType;
+
   tac_node_t *vec_node
     = tac_new(TAC_FROMVECMOV, vec_temp, index->res, ast_node->symbol);
   if(index->type != TAC_SYMBOL)

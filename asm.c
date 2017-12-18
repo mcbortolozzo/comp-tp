@@ -11,15 +11,20 @@ void gen_var(tac_node_t *tac);
 
 void gen_code(tac_node_t* tac);
 void print_asm(tac_node_t* tac_print);
+void read_asm(tac_node_t* node);
 void op_asm(tac_node_t* node);
 void mov_asm(tac_node_t* node);
+void tovec_asm(tac_node_t *node);
+void fromvec_asm(tac_node_t *node);
+void cmp_asm(tac_node_t *node, int is_float);
+void jz_asm(tac_node_t *node);
 
 int strCount = 0;
 int doubleCount = 0;
+int cmpCount = 0;
 
 void generate_asm(tac_node_t *tac)
 {
-  //fix_strings(symbolTable);
   gen_vars(tac, symbolTable);
 
   printf("\n\n.section .text\n");
@@ -90,15 +95,18 @@ void gen_var(tac_node_t *tac)
     if(tac->op1->dataType == TYPE_INT)
       printf("\t.quad %s\n", tac->op1->text);
     else
-      printf("\t.float %s\n", tac->op1->text);
+      printf("\t.double %s\n", tac->op1->text);
     break;
     case TAC_VECTDECL:
     if(tac->res->dataType == TYPE_INT)
-      printf("%s:\n\t.quad", tac->res->text);
+      printf("%s:\n\t.quad ", tac->res->text);
     else
-      printf("%s:\n\t.float", tac->res->text);
+      printf("%s:\n\t.double ", tac->res->text);
     break;
-    case TAC_INITVECT:    printf("%s,", tac->op2->text); break;
+    case TAC_INITVECT:
+      if(tac->prev->type != TAC_VECTDECL)
+      printf(",");
+      printf("%s", tac->op2->text); break;
   }
 }
 
@@ -107,12 +115,25 @@ void gen_code(tac_node_t* tac)
   if(!tac) return;
   gen_code(tac->prev);
   switch (tac->type) {
-    case TAC_MOV:       mov_asm(tac); break;
+    case TAC_MOV:         mov_asm(tac); break;
+    case TAC_TOVECMOV:    tovec_asm(tac); break;
+    case TAC_FROMVECMOV:  fromvec_asm(tac); break;
+    case TAC_NE:
+    case TAC_LESS:
+    case TAC_LE:
+    case TAC_GREATER:
+    case TAC_GE:
+    case TAC_EQ:
     case TAC_SUB:
     case TAC_MUL:
-    case TAC_ADD:       op_asm(tac); break;
-    case TAC_PRINT:     print_asm(tac); break;
-    case TAC_ENDFUN:    printf("ret\n"); break;
+    case TAC_DIV:
+    case TAC_ADD:         op_asm(tac); break;
+    case TAC_PRINT:       print_asm(tac); break;
+    case TAC_READ:        read_asm(tac); break;
+    case TAC_ENDFUN:      printf("ret\n"); break;
+    case TAC_IFZ:         jz_asm(tac); break;
+    case TAC_JUMP:        printf("\tjmp %s\n", tac->op1->text); break;
+    case TAC_LABEL:       printf("%s:\n", tac->op1->text); break;
   }
 }
 
@@ -149,6 +170,62 @@ void mov_asm(tac_node_t* node)
       printf("\tmovq $%s, %%rax\n", node->op1->text);
       printf("\tmovq %%rax, %s\n", node->res->text);
     }
+  }
+}
+
+void tovec_asm(tac_node_t *node)
+{
+
+  if(is_var_type(node->op1))
+    printf("\tmovq %s, %%rbx\n", node->op1->text);
+  else
+    printf("\tmovq $%s, %%rbx\n", node->op1->text);
+
+  if(is_var_type(node->op2))
+  {
+    if(node->op1->dataType == TYPE_FLOAT)
+    {
+      printf("\tmovsd %s, %%xmm1\n", node->op2->text);
+      printf("\tmovsd %%xmm1, %s(,%%rbx,8)\n", node->res->text);
+    }
+    else
+    {
+      printf("\tmovq %s, %%rax\n", node->op2->text);
+      printf("\tmovq %%rax, %s(,%%rbx,8)\n", node->res->text);
+    }
+  }
+  else
+  {
+    if(node->op2->dataType == TYPE_FLOAT)
+    {
+      printf("\tmovsd _double_%d, %%xmm1\n", node->op2->nature);
+      printf("\tmovsd %%xmm1, %s(,%%rbx,8)\n", node->res->text);
+    }
+    else
+    {
+      printf("\tmovq $%s, %%rax\n", node->op2->text);
+      printf("\tmovq %%rax, %s(,%%rbx,8)\n", node->res->text);
+    }
+  }
+}
+
+void fromvec_asm(tac_node_t *node)
+{
+  if(is_var_type(node->op1))
+    printf("\tmovq %s, %%rbx\n", node->op1->text);
+  else
+    printf("\tmovq $%s, %%rbx\n", node->op1->text);
+
+
+  if(node->op2->dataType == TYPE_FLOAT)
+  {
+    printf("\tmovsd %s(,%%rbx,8), %%xmm1\n", node->op2->text);
+    printf("\tmovsd %%xmm1, %s\n", node->res->text);
+  }
+  else
+  {
+    printf("\tmovq %s(,%%rbx,8), %%rax\n", node->op2->text);
+    printf("\tmovq %%rax, %s\n", node->res->text);
   }
 }
 
@@ -205,6 +282,13 @@ void op_asm(tac_node_t* node)
       case TAC_ADD: printf("\taddsd %%xmm0, %%xmm1\n"); break;
       case TAC_SUB: printf("\tsubsd %%xmm0, %%xmm1\n"); break;
       case TAC_MUL: printf("\tmulsd %%xmm0, %%xmm1\n"); break;
+      case TAC_DIV: printf("\tdivsd %%xmm0, %%xmm1\n"); break;
+      case TAC_NE:
+      case TAC_LESS:
+      case TAC_LE:
+      case TAC_GREATER:
+      case TAC_GE:
+      case TAC_EQ: cmp_asm(node, 1); return;
     }
 
     printf("\tmovsd %%xmm1, %s\n", node->res->text);
@@ -225,14 +309,57 @@ void op_asm(tac_node_t* node)
       case TAC_ADD: printf("\taddq %%rbx, %%rax\n"); break;
       case TAC_SUB: printf("\tsubq %%rbx, %%rax\n"); break;
       case TAC_MUL: printf("\timulq %%rbx, %%rax\n"); break;
+      case TAC_DIV: printf("\tcqto\n\tidivq %%rbx\n"); break;
+      case TAC_NE:
+      case TAC_LESS:
+      case TAC_LE:
+      case TAC_GREATER:
+      case TAC_GE:
+      case TAC_EQ: cmp_asm(node, 0); return;
     }
 
     printf("\tmovq %%rax, %s\n", node->res->text);
   }
-
 }
 
-void print_asm(tac_node_t* node)
+void cmp_asm(tac_node_t *node, int is_float)
+{
+  if(is_float)
+  {
+    printf("\tucomisd %%xmm0, %%xmm1\n");
+    printf("\tjp _cmp_f_%d\n", cmpCount);
+    switch (node->type) {
+      case TAC_EQ:      printf("\tjne _cmp_f_%d\n", cmpCount); break;
+      case TAC_NE:      printf("\tje _cmp_f_%d\n", cmpCount); break;
+      case TAC_LESS:    printf("\tjae _cmp_f_%d\n", cmpCount); break;
+      case TAC_LE:      printf("\tja _cmp_f_%d\n", cmpCount); break;
+      case TAC_GREATER: printf("\tjbe _cmp_f_%d\n", cmpCount); break;
+      case TAC_GE:      printf("\tjb _cmp_f_%d\n", cmpCount); break;
+    }
+  }
+  else
+  {
+    printf("\tcmp %%rbx, %%rax\n");
+    switch (node->type) {
+      case TAC_EQ:      printf("\tjne _cmp_f_%d\n", cmpCount); break;
+      case TAC_NE:      printf("\tje _cmp_f_%d\n", cmpCount); break;
+      case TAC_LESS:    printf("\tjge _cmp_f_%d\n", cmpCount); break;
+      case TAC_LE:      printf("\tjg _cmp_f_%d\n", cmpCount); break;
+      case TAC_GREATER: printf("\tjle _cmp_f_%d\n", cmpCount); break;
+      case TAC_GE:      printf("\tjl _cmp_f_%d\n", cmpCount); break;
+    }
+  }
+
+  printf("\tmovq $1, %%rax\n");
+  printf("\tjmp _cmp_s_%d\n", cmpCount);
+  printf("_cmp_f_%d:\n", cmpCount);
+  printf("\tmovq $0, %%rax\n");
+  printf("_cmp_s_%d:\n", cmpCount);
+  printf("\tmovq %%rax, %s\n", node->res->text);
+  cmpCount++;
+}
+
+void print_asm(tac_node_t *node)
 {
   printf("\tpushq %%rbp\n");
   printf("\tmovq %%rsp, %%rbp\n");
@@ -275,5 +402,29 @@ void print_asm(tac_node_t* node)
   }
   printf("\tcall printf\n");
   printf("\tpopq %%rbp\n");
+}
 
+void read_asm(tac_node_t *node)
+{
+    if(node->res->dataType == TYPE_INT)
+    {
+      printf("\tmovq $%s, %%rsi\n", node->res->text);
+      printf("\tmovq $.formatint, %%rdi\n");
+      printf("\tmovq $0, %%rax\n");
+      printf("\tcall scanf\n");
+    }
+    else if(node->res->dataType == TYPE_FLOAT)
+    {
+      printf("\tmovq $%s, %%rsi\n", node->res->text);
+      printf("\tmovq $.formatdouble, %%rdi\n");
+      printf("\tmovq $0, %%rax\n");
+      printf("\tcall scanf\n");
+    }
+}
+
+void jz_asm(tac_node_t *node)
+{
+  printf("\tmovq %s, %%rax\n", node->op1->text);
+  printf("\tcmp $0, %%rax\n");
+  printf("\tje %s\n", node->op2->text);
 }

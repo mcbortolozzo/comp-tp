@@ -40,7 +40,7 @@
 #define TAC_POPARG      161
 
 #define TAC_VARDECL     170
-#define TAC_VECTDECL     171
+#define TAC_VECTDECL    171
 #define TAC_INITVAR     172
 #define TAC_INITVECT    173
 

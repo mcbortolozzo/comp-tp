@@ -2,9 +2,15 @@
 a: float = 1.0;
 b: byte = 'y';
 c: long = 65;
-
+d: float[2] 0.5 1.5;
 (long) main()
 {
-	a =  3.3 - 2.2;
-	print (a), "\n", 'c', "\n";
+	if(c == 65) then
+	{
+		print "TRUE\n";
+	}
+	else
+	{
+		print "FALSE\n";
+	}
 }
