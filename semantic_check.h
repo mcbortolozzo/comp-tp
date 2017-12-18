@@ -16,5 +16,6 @@
 #define TYPE_BOOL       220
 
 int check_tree(ast_node_t *root);
+func_list_t* scope_list;
 
 #endif

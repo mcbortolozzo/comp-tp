@@ -75,3 +75,34 @@ func_decl_t* find_decl(func_list_t *func_list, hash_node_t *id)
   }
   return 0;
 }
+
+int get_param_pos(func_list_t *funcs,
+                  hash_node_t *currentFunction,
+                  hash_node_t *param)
+{
+  func_decl_t *function = find_decl(funcs, currentFunction);
+  hash_node_t *curr = function->params;
+  int pos = 0;
+  int total = 0;
+  while(curr)
+  {
+    if(hashString(curr->text) == hashString(param->text))
+      pos = total;
+    curr = curr->next;
+    total++;
+  }
+  return total - pos - 1;
+}
+
+int count_args(func_list_t *funcs, hash_node_t *func)
+{
+  func_decl_t *function = find_decl(funcs, func);
+  hash_node_t *curr = function->params;
+  int total = 0;
+  while(curr)
+  {
+    curr = curr->next;
+    total++;
+  }
+  return total;
+}

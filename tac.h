@@ -43,6 +43,7 @@
 #define TAC_VECTDECL    171
 #define TAC_INITVAR     172
 #define TAC_INITVECT    173
+#define TAC_VECZERO     180
 
 typedef struct tac_node
 {

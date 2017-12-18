@@ -16,7 +16,6 @@ int is_declared(hash_node_t *symbol);
 int get_semantic_type(ast_node_t *type_node);
 void semantic_error(const char *error_msg, int line, const char *args, ...);
 
-func_list_t* scope_list;
 int sem_error = 0;
 
 int check_tree(ast_node_t *root)

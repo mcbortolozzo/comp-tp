@@ -1,6 +1,5 @@
 #include "tac.h"
 
-//// FALTANDO: AND, OR, NOT, BEGIN/ENDFUN, RET, CALL
 
 int Label_Count = 0;
 int Temp_Count = 0;
@@ -186,7 +185,7 @@ tac_node_t *tac_arg_list(ast_node_t *ast_node)
   if(arg_expr->type != TAC_SYMBOL)
     arg = tac_join(arg_expr, arg);
 
-  return tac_join(arg_list, arg);
+  return tac_join(arg, arg_list);
 }
 
 tac_node_t* tac_not(ast_node_t *ast_node)
@@ -265,6 +264,8 @@ tac_node_t *tac_var_decl(ast_node_t *ast_node)
       decl = tac_new(TAC_VECTDECL, symbol->res, 0, 0);
       if(init->children[0])
         tac_init = tac_vect_init(init->children[0], symbol, 0);
+      else
+        tac_init = tac_new(TAC_VECZERO, 0, init->symbol, 0);
       tac_init = tac_join(decl, tac_init);
       break;
   }

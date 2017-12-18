@@ -1,4 +1,6 @@
 #include "tac.h"
+#include "func_list.h"
+#include "semantic_check.h"
 
 #ifndef ASM_H
 #define ASM_H

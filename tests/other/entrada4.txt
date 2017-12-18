@@ -2,10 +2,11 @@
 a: float = 1.0;
 b: byte = 'y';
 c: long = 65;
-d: float[2] 0.5 1.5;
+d: long[2] 0 1;
 (long) main()
 {
-	if(c == 65) then
+	c = sum(c, 0+c-c+2*2 - 4 / 2, d[0]);
+	if(!(c == 65) && (c == 65)) then
 	{
 		print "TRUE\n";
 	}
@@ -13,4 +14,9 @@ d: float[2] 0.5 1.5;
 	{
 		print "FALSE\n";
 	}
+}
+
+(long) sum(f: long, g: long, h: long)
+{
+	return (f + g - h);
 }
